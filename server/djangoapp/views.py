@@ -43,6 +43,7 @@ def logout_request(request):
     data = {"userName":""}
     return JsonResponse(data)
 
+
 # Create a `registration` view to handle sign up request
 @csrf_exempt
 def registration(request):
@@ -74,6 +75,7 @@ def registration(request):
     else :
         data = {"userName":username,"error":"Already Registered"}
         return JsonResponse(data)
+
 
 def get_cars(request):
     count = CarMake.objects.filter().count()
