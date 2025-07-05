@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect,useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import "./Dealers.css";
 import "../assets/style.css";
@@ -24,18 +24,18 @@ const Dealer = () => {
   let reviews_url = root_url+`djangoapp/reviews/dealer/${id}`;
   let post_review = root_url+`postreview/${id}`;
   
-  const get_dealer = async ()=>{
+  const get_dealer = useCallback(async ()=>{
     const res = await fetch(dealer_url, {
       method: "GET"
     });
     const retobj = await res.json();
     
     if(retobj.status === 200) {
-      setDealer(retobj.dealer)
+      setDealer(retobj.dealer[0])
     }
-  }
+  }, [dealer_url]);
 
-  const get_reviews = async ()=>{
+  const get_reviews = useCallback(async ()=>{
     const res = await fetch(reviews_url, {
       method: "GET"
     });
@@ -48,7 +48,7 @@ const Dealer = () => {
         setUnreviewed(true);
       }
     }
-  }
+  }, [reviews_url]);
 
   const senti_icon = (sentiment)=>{
     let icon = sentiment === "positive"?positive_icon:sentiment==="negative"?negative_icon:neutral_icon;
@@ -63,7 +63,7 @@ const Dealer = () => {
 
       
     }
-  },[]);  
+  },[get_dealer, get_reviews, post_review]);  
 
 
 return(
@@ -73,7 +73,7 @@ return(
       <h1 style={{color:"grey"}}>{dealer.full_name}{postReview}</h1>
       <h4  style={{color:"grey"}}>{dealer['city']},{dealer['address']}, Zip - {dealer['zip']}, {dealer['state']} </h4>
       </div>
-      <div class="reviews_panel">
+      <div className="reviews_panel">
       {reviews.length === 0 && unreviewed === false ? (
         <text>Loading Reviews....</text>
       ):  unreviewed === true? <div>No reviews yet! </div> :
